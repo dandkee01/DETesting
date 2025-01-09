@@ -1,0 +1,3 @@
+﻿import QCCommon,ClaimsDiscoveryAuto_InquiryHistory,insurance,Delta_Macro,ut,did_add;
+UpdateSubject := Delta_Macro.Update_Files(ClaimsDiscoveryAuto_InquiryHistory.Files.InqSubj_DS,Delta_Macro.constants.ClaimsDiscovery_Auto_subject_fields,true,'claimsdiscovery_auto','',ClaimsDiscoveryAuto_InquiryHistory.Files.CD_Prefix,ClaimsDiscoveryAuto_InquiryHistory.Files.InqSubj_Suffix,false);
+UpdateSubject;

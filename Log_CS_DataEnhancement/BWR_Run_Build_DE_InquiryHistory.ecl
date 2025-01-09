@@ -1,0 +1,10 @@
+﻿IMPORT CustomerSupport;
+#WORKUNIT('priority','high');
+#WORKUNIT('priority',10);
+#workunit('name','Customer Support Data Enh logs - 20240227a');
+LogName        := 'DATAENH';
+RunSequence    := '20240227a';
+//FlagString     := '[{\'20240213\', 3570408}, {\'20240227a\', 578052}]';
+//UniXCount  := '4148460';
+sequential(CustomerSupport.Build_DE_InquiryHistory('20240227a').Spray_Data,CustomerSupport.Build_DE_InquiryHistory('20240227a').Base_Build,CustomerSupport.Build_DE_InquiryHistory('20240227a').Keys_Build);
+//CustomerSupportLogCounts.AddCountsToFile(LogName, RunSequence, UniXCount, FlagString);

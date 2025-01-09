@@ -1,0 +1,2 @@
+﻿ FN_Copy_DataFromProd('thor::base::claimsdiscoveryproperty::qa::inqhist::subject','20240820','thor::base::claimsdiscoveryproperty::','20240820a','thor::base::claimsdiscoveryproperty::kcd::qa::inqhist::subject');
+ FN_Copy_DataFromProd('thor::base::claimsdiscoveryproperty::qa::account::requirements','20240820','thor::base::claimsdiscoveryproperty::','20240820a','thor::base::claimsdiscoveryproperty::kcd::qa::account::requirements');

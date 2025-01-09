@@ -1,0 +1,3 @@
+﻿ //FN_Copy_DataFromProd('thor::base::claimsdiscoveryauto::qa::inqhist::subject','20240712','thor::base::claimsdiscoveryauto::','20240712a','thor::base::claimsdiscoveryauto::kcd::qa::inqhist::subject');
+ FN_Copy_DataFromProd('thor::base::claimsdiscoveryauto::qa::inqhist::claim','20240712','thor::base::claimsdiscoveryauto::','20240712a','thor::base::claimsdiscoveryauto::kcd::qa::inqhist::claim');
+ FN_Copy_DataFromProd('thor::base::claimsdiscoveryauto::qa::account::requirements','20240712','thor::base::claimsdiscoveryauto::','20240712a','thor::base::claimsdiscoveryauto::kcd::qa::account::requirements');

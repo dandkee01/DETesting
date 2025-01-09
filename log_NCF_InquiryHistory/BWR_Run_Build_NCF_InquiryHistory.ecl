@@ -1,0 +1,10 @@
+﻿IMPORT CustomerSupportFCRA;
+#WORKUNIT('priority',10);
+#WORKUNIT('priority','high');
+#workunit('name','CS FCRA NCF Inquiry History - 20240226a');
+LogName        := 'NCF';
+RunSequence    := '20240226a';
+//FlagString     := '[{\'20240213\', 8088902}, {\'20240214\', 2145524}]';
+//UniXCount  := '10234426';
+sequential(/*CustomerSupportFCRA.Build_NCF_InquiryHistory('20240226a').Spray_Data,*/CustomerSupportFCRA.Build_NCF_InquiryHistory('20240226a').Base_Build,CustomerSupportFCRA.Build_NCF_InquiryHistory('20240226a').Keys_Build/*,fileservices.despray('~thor_data400::out::NCF::scoring::complete',_control.IPAddress.prodlz,'/insdataops/mbsilogs/intermediatelog/flags/NCFComplete.flag',,,,true)*/);
+//CustomerSupportLogCounts.AddCountsToFile(LogName, RunSequence, UniXCount, FlagString);
