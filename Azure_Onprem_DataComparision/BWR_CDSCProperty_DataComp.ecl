@@ -61,26 +61,30 @@ SubLay := RECORD
   unsigned1 delta_ind;
  END;
 
-Azure_File := '~thor::base::claimsdiscoveryproperty::psb::20241211a::daily::inqhist::subject';
+//Azure_File := '~thor::base::claimsdiscoveryproperty::az15a::qa::inqhist::subject';
+Azure_File := '~thor::base::claimsdiscoveryproperty::az15a::20250116a::daily::inqhist::subject';
 
 Azure_DS := DATASET(Azure_File,SubLay,THOR);
 
-//OUTPUT(COUNT(Azure_DS),named('Azure_DS_cnt'));
+output(Azure_DS, named('Azure_DS'));
+OUTPUT(COUNT(Azure_DS),named('Azure_DS_cnt'));
 
 
-OnPrem_File := '~thor::base::claimsdiscoveryproperty::psb::20241211::daily::inqhist::subject';
+//OnPrem_File := '~thor::base::claimsdiscoveryproperty::onp15::qa::inqhist::subject';
+OnPrem_File := '~thor::base::claimsdiscoveryproperty::onp15::20250116op::daily::inqhist::subject';
 
 OnPrem_DS := DATASET(OnPrem_File,SubLay,THOR);
 
-//OUTPUT(COUNT(OnPrem_DS),named('OnPrem_DS_cnt'));
+output(OnPrem_DS, named('OnPrem_DS'));
+OUTPUT(COUNT(OnPrem_DS),named('OnPrem_DS_cnt'));
 
 //***Verification for data difference************
 
 DataDiff2 := OnPrem_DS-Azure_DS;
-OUTPUT(CHOOSEN(DataDiff2,200),named('DataDiff2'));
+OUTPUT(CHOOSEN(DataDiff2,200),named('OnPrem_DataDiff'));
 
 DataDiff1 := Azure_DS-OnPrem_DS;
-OUTPUT(CHOOSEN(DataDiff1,200),named('DataDiff1'));
+OUTPUT(CHOOSEN(DataDiff1,200),named('Azure_DataDiff'));
 
 
 //OUTPUT(Azure_DS( transaction_id IN ['18236783T000326','18236783T000937','18236783T000951']),named('AzureDS_SampleData'));

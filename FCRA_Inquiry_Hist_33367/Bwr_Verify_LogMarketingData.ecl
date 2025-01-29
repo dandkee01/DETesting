@@ -3,8 +3,8 @@
     MarketingSprayDS									 := FCRA_Inquiry_History.Files.read_Marketing_FCRA_Spray_File;
     FilterKeyDS				 				         := MarketingSprayDS(posting_status = 'R' and order_status_code IN [100,101]);
     
-    OUTPUT(COUNT(FilterKeyDS), named('Cnt_FilterKeyDS'));
-    OUTPUT(FilterKeyDS, named('FilterKeyDS'));
+    OUTPUT(COUNT(FilterKeyDS), named('Cnt_MarketingSprayDS'));
+    OUTPUT(FilterKeyDS, named('MarketingSprayDS'));
     
   Lay :=   RECORD
   unsigned8 lex_id;
@@ -58,13 +58,15 @@
     
     //DeltaFile := DATASET('~thor::base::fcra::delta_inq_hist::20241215::delta_key',Lay,thor); // 1st run
     //DeltaFile := DATASET('~thor::base::fcra::delta_inq_hist::20241216::delta_key',Lay,thor);   // 2nd run
-    DeltaFile := DATASET('~thor::base::fcra::delta_inq_hist::20241217::delta_key',Lay,thor);   // 3rd run
+    //DeltaFile := DATASET('~thor::base::fcra::delta_inq_hist::20241217::delta_key',Lay,thor);   // 3rd run
+    //DeltaFile := DATASET('~thor::base::fcra::delta_inq_hist::20241218::delta_key',Lay,thor);   // 4th run
+    DeltaFile := DATASET('~thor::base::fcra::delta_inq_hist::20241219::delta_key',Lay,thor);   // 4th run
     
-    OUTPUT(COUNT(DeltaFile(transaction_location='Log_marketing')),named('CNT_DeltaFile_logMarketing'));
-    OUTPUT(DeltaFile(transaction_location='Log_marketing'),named('DeltaFile_logMarketing'));
+    OUTPUT(COUNT(DeltaFile(transaction_location='Log_marketing')),named('CNT_FCRA_DelaInqHist_LogMarketing'));
+    OUTPUT(DeltaFile(transaction_location='Log_marketing'),named('FCRA_DelaInqHist_LogMarketing'));
     
-    OUTPUT(FilterKeyDS(transaction_id IN['19030951N2410','19030891N100063','19030891N100081','19030891N10010','19030891N100118','19030891N100137','19030891N100172','19030891N100178','19030891N100186','19030891N100216']), named('sample_FilterKeyDS'));       
-    OUTPUT(DeltaFile(transaction_id IN['19030951N2410','19030891N100063','19030891N100081','19030891N10010','19030891N100118','19030891N100137','19030891N100172','19030891N100178','19030891N100186','19030891N100216']), named('sample_DeltaFileDS'));       
+    OUTPUT(FilterKeyDS(transaction_id IN['19030951N2410','19030891N100063','19030891N100081','19030891N10010','19030891N100118','19030891N100137','19030891N100172','19030891N100178','19030891N100186','19030891N100216']), named('sample_MarketingSprayDS'));       
+    OUTPUT(DeltaFile(transaction_id IN['19030951N2410','19030891N100063','19030891N100081','19030891N10010','19030891N100118','19030891N100137','19030891N100172','19030891N100178','19030891N100186','19030891N100216']), named('sample_DelaInqHist_LogMarketing'));       
     
     DeltaFile_DidNotZero := DeltaFile(transaction_location='Log_marketing' and did<>0);
     

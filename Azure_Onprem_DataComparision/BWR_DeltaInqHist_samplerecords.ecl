@@ -51,36 +51,18 @@ Lay := RECORD
 
 
 
-Azure_File := '~thor::base::fcra_azure::delta_inq_hist::20241113a::delta_key';
+Azure_File := '~thor::base::azure::fcra::delta_inq_hist::20250122a::delta_key';
 
 Azure_DS := SORT(DATASET(Azure_File,Lay,THOR),-transaction_id,product_id,customer_number,customer_account,seq_num);
 
 //Azure_DS(transaction_id='18500963R566417');     
 
-OnPrem_File := '~thor::base::fcra_onperm::delta_inq_hist::20241113::delta_key';
+OnPrem_File := '~thor::base::onprem::fcra::delta_inq_hist::20250122op::delta_key';
 
 OnPrem_DS := SORT(DATASET(OnPrem_File,Lay,THOR),-transaction_id,product_id,customer_number,customer_account,seq_num);
 
 
-//*********** Records That exists only in Azure But not in Onprem *************************//
 
-// Below are the transactions which has seq no 0 in azure and proper seq no in on prem   W20241202-161156
-OUTPUT(Azure_DS(transaction_id IN ['18501633R899470','18501633R899552','18501643R857675','18501643R860934','18501723R854965','18501723R898440','18501973R853741','18501973R895120','18502013R894687','18502013R894786']),named('Only_Azure'));
-OUTPUT(OnPrem_DS(transaction_id IN ['18501633R899470','18501633R899552','18501643R857675','18501643R860934','18501723R854965','18501723R898440','18501973R853741','18501973R895120','18502013R894687','18502013R894786']),named('Not_In_Onprem'));
-
-//*********** Records That exists only in Onprem But not in Azure *************************//
-
-//OUTPUT(OnPrem_DS(transaction_id IN ['23122002677384']));// repeated multiple times with diff record sid
-OUTPUT(OnPrem_DS(transaction_id IN ['18501633R845371','18501633R846951','18501633R847028','23122002677473','18501633R851268','18501633R853088','18501633R854857','18501633R855095','18501633R855581','18501633R857621']),named('Only_Onprem'));
-OUTPUT(Azure_DS(transaction_id IN ['18501633R845371','18501633R846951','18501633R847028','23122002677473','18501633R851268','18501633R853088','18501633R854857','18501633R855095','18501633R855581','18501633R857621']),named('Not_In_Azure'));
-
-//***************** Records That exists in both *******************************//
-
-OUTPUT(OnPrem_DS(transaction_id IN ['18812283R139082','18812313R132966','18812293R147468','18812283R130815','18812313R114026']),named('Both_OnPrem'));
-OUTPUT(Azure_DS(transaction_id IN ['18812283R139082','18812313R132966','18812293R147468','18812283R130815','18812313R114026']),named('Both_Azure'));
-
-
-
-
-
+OUTPUT(Azure_DS(transaction_id IN ['PDW250121223315VW7U4','PDW250122011150ZKSVM','PDW250122001422EGHD6','PDW250121200455BJU2F','PDW250121200049SD9ZS']),named('Special_Charecters_Azure'));
+OUTPUT(OnPrem_DS(transaction_id IN ['PDW250121223315VW7U4','PDW250122011150ZKSVM','PDW250122001422EGHD6','PDW250121200455BJU2F','PDW250121200049SD9ZS']),named('Special_Charecters_Onprem'));
 

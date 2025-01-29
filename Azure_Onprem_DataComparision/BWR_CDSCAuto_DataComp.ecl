@@ -1,5 +1,5 @@
 ﻿
-Lay := name := RECORD
+name := RECORD
    string28 lname;
    string20 fname;
    string15 mname;
@@ -59,98 +59,63 @@ SubLay := RECORD
   unsigned1 delta_ind;
  END;
 
- END;
+
+Sub_Azure_File := '~thor::base::claimsdiscoveryauto::azu::20250124a::daily::inqhist::subject';
+
+Sub_Azure_DS := DATASET(Sub_Azure_File,SubLay,THOR);
+
+OUTPUT(COUNT(Sub_Azure_DS),named('Sub_Azure_DS_cnt'));
 
 
-Azure_File := '~thor::base::claimsdiscoveryauto::20240903a::inqhist::subject';
+Sub_OnPrem_File := '~thor::base::claimsdiscoveryauto::onp::20250124::daily::inqhist::subject';
 
-Azure_DS := DATASET(Azure_File,SubLay,THOR);
+Sub_OnPrem_DS := DATASET(Sub_OnPrem_File,SubLay,THOR);
 
-//OUTPUT(COUNT(Azure_DS),named('Azure_DS_cnt'));
-
-
-OnPrem_File := '~thor::base::claimsdiscoveryauto::20240903::inqhist::subject';
-
-OnPrem_DS := DATASET(OnPrem_File,SubLay,THOR);
-
-//OUTPUT(COUNT(OnPrem_DS),named('OnPrem_DS_cnt'));
+OUTPUT(COUNT(Sub_OnPrem_DS),named('Sub_OnPrem_DS_cnt'));
 
 //***Verification for data difference************
 
-DataDiff1 := Azure_DS-OnPrem_DS;
-OUTPUT(CHOOSEN(DataDiff1,200),named('DataDiff1'));
-DataDiff2 := OnPrem_DS-Azure_DS;
-OUTPUT(CHOOSEN(DataDiff2,200),named('DataDiff2'));
-
-OUTPUT(Azure_DS( transaction_id IN ['18236783T000326','18236783T000937','18236783T000951']),named('AzureDS_SampleData'));
-OUTPUT(OnPrem_DS( transaction_id IN ['18236783T000326','18236783T000937','18236783T000951']),named('OnPrem_DS_SampleData'));
+Sub_DataDiff2 := Sub_OnPrem_DS-Sub_Azure_DS;
+OUTPUT(Sub_DataDiff2,named('OnPrem_DataDiff'));
+Sub_DataDiff1 := Sub_Azure_DS-Sub_OnPrem_DS;
+OUTPUT(Sub_DataDiff1,named('Azure_DataDiff'));
 
 
-//**********************************************************************************************************************************************************
+//OUTPUT(Sub_Azure_DS( transaction_id IN ['18236783T000326','18236783T000937','18236783T000951']),named('AzureDS_SampleData'));
+//OUTPUT(OnPrem_DS( transaction_id IN ['18236783T000326','18236783T000937','18236783T000951']),named('OnPrem_DS_SampleData'));
 
-Lay2 := RECORD
-  string20 transaction_id;
-  string6 multi_report_sequence;
-  string14 date_added;
-  string20 reference_number;
-  string14 order_date;
-  string2 state_postal_code;
-  string22 order_dln;
-  string22 order_cleaned_dln;
-  string22 result_cleaned_dln;
-  string20 idl;
-  string9 account;
-  string14 response_date;
-  string28 order_last_name;
-  string20 order_first_name;
-  string20 order_middle_name;
-  string5 order_suffix_name;
-  string8 order_dob;
-  string1 order_sex;
-  string9 order_ssn;
-  string28 result_last_name;
-  string20 result_first_name;
-  string20 result_middle_name;
-  string5 result_suffix_name;
-  string8 result_dob;
-  string1 result_sex;
-  string9 result_ssn;
-  string3 fulfilled_by;
-  string10 business_line;
-  string1 mode;
-  string1 mvr_type;
-  string1 private;
-  string1 restricted;
-  string1 amplified;
-  string1 source;
-  string1 mvr_status;
-  string14 report_date;
-  string16 unique_mvr_id;
-  unsigned4 record_expires_date;
+
+//Claim File
+
+Claim_Lay := RECORD
+  string14 reference_no;
+  string3 unit_no;
+  string25 claim_no;
+  unsigned8 record_sid;
+  unsigned4 dt_effective_first;
+  unsigned4 dt_effective_last;
+  unsigned1 delta_ind;
  END;
 
-DeltaAzure_File := '~thor::base::mvr::20240902a::2024-09-032204062::delta_key.txt';
+Claim_AzureFile := '~thor::base::claimsdiscoveryauto::azu::20250124a::daily::inqhist::claim';
 
-DisDeltaAzure_DS := DATASET(DeltaAzure_File,Lay2,THOR);
+Claim_Azure_DS := DATASET(Claim_AzureFile,Claim_Lay,THOR);
 
-
-//OUTPUT(COUNT(DisDeltaAzure_DS),named('DeltaAzure_DS_cnt'));
-
-
-DeltaOnPrem_File := '~thor::base::mvr::20240902::2024-09-032240042::delta_key.txt';
-
-DisDeltaOnPrem_DS := DATASET(DeltaOnPrem_File,Lay2,THOR);
+OUTPUT(COUNT(Claim_Azure_DS),named('Claim_Azure_DS_cnt'));
 
 
+Claim_OnPrem_File := '~thor::base::claimsdiscoveryauto::onp::20250124::daily::inqhist::claim';
 
-//OUTPUT(COUNT(DisDeltaOnPrem_DS),named('DeltaOnPrem_DS_cnt'));
+Claim_OnPrem_DS := DATASET(Claim_OnPrem_File,Claim_Lay,THOR);
+
+OUTPUT(COUNT(Claim_OnPrem_DS),named('Claim_OnPrem_DS_cnt'));
 
 //***Verification for data difference************
 
-DeltaDataDiff1 := DisDeltaAzure_DS-DisDeltaOnPrem_DS;
-OUTPUT(CHOOSEN(DeltaDataDiff1,200),named('DeltaDataDiff1'));
-DeltaDataDiff2 := DisDeltaOnPrem_DS-DisDeltaAzure_DS;
-OUTPUT(CHOOSEN(DeltaDataDiff2,200),named('DeltaDataDiff2'));
+Claim_DataDiff2 := Claim_OnPrem_DS-Claim_Azure_Ds;
+OUTPUT(Claim_DataDiff2,named('Claim_OnPrem_DataDiff'));
+Claim_DataDiff1 := Claim_Azure_Ds-Claim_OnPrem_DS;
+OUTPUT(Claim_DataDiff1,named('Claim_Azure_DataDiff'));
 
-OUTPUT(DisDeltaAzure_DS( transaction_id IN ['18140073T000139','	18140073T000492','18235343T001283']),named('Delta_AzureDS_SampleData'));
-OUTPUT(DisDeltaOnPrem_DS( transaction_id IN ['18140073T000139','	18140073T000492','18235343T001283']),named('DeltaOnPrem_DS_SampleData'));
+
+

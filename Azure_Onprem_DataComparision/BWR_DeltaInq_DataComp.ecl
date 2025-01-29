@@ -50,14 +50,14 @@ Lay := RECORD
 
 
 
-Azure_File := '~thor::base::fcra::delta_inq_hist::20241101a::delta_key';
+Azure_File := '~thor::base::azure::fcra::delta_inq_hist::20250122a::delta_key';
 
 Azure_DS := SORT(DATASET(Azure_File,Lay,THOR),-transaction_id,product_id,customer_number,customer_account,seq_num);
 
 OUTPUT(COUNT(Azure_DS),named('Azure_DS_cnt'));
 
 
-OnPrem_File := '~thor::base::fcra::delta_inq_hist::20241101::delta_key';
+OnPrem_File := '~thor::base::onprem::fcra::delta_inq_hist::20250122op::delta_key';
 
 OnPrem_DS := SORT(DATASET(OnPrem_File,Lay,THOR),-transaction_id,product_id,customer_number,customer_account,seq_num);
 
@@ -65,19 +65,23 @@ OUTPUT(COUNT(OnPrem_DS),named('OnPrem_DS_cnt'));
 
 //***Verification for data difference************
 
-DataDiff1 := CHOOSEN(Azure_DS-OnPrem_DS,300);
-OUTPUT(SORT(DataDiff1(lex_id<>0),-transaction_id,product_id,customer_number,customer_account,seq_num),named('DataDiff1'));
-OUTPUT(COUNT(DataDiff1),named('Count_DataDiff1'));
-DataDiff2 := CHOOSEN(OnPrem_DS-Azure_DS,300);
-OUTPUT(SORT(DataDiff2(lex_id<>0),-transaction_id,product_id,customer_number,customer_account,seq_num),named('DataDiff2'));
-OUTPUT(COUNT(DataDiff2),named('Count_DataDiff2'));
+//OnPremOnly := CHOOSEN(OnPrem_DS-Azure_DS,300);
+OnPremOnly := OnPrem_DS-Azure_DS;
+OUTPUT(SORT(OnPremOnly(lex_id<>0),-transaction_id,product_id,customer_number,customer_account,seq_num),named('OnPremOnly'));
+OUTPUT(COUNT(OnPremOnly),named('Count_OnPremOnly'));
 
-AzurmatchDS := Azure_DS-DataDiff1;
+//AzureOnly := CHOOSEN(Azure_DS-OnPrem_DS,300);
+AzureOnly := Azure_DS-OnPrem_DS;
+OUTPUT(SORT(AzureOnly(lex_id<>0),-transaction_id,product_id,customer_number,customer_account,seq_num),named('AzureOnly'));
+OUTPUT(COUNT(AzureOnly),named('Count_AzureOnly'));
+
+
+AzurmatchDS := Azure_DS-AzureOnly;
 OUTPUT(AzurmatchDS, named('AzurmatchDS'));
-OnpremmatchDS := OnPrem_DS-DataDiff2;
+OnpremmatchDS := OnPrem_DS-OnPremOnly;
 OUTPUT(OnpremmatchDS, named('OnpremmatchDS'));
 
-
+/*
 DesprayFun(STRING file, STRING fname) := FUNCTION
 
    DateToday             := (STRING)STD.date.Today();
@@ -88,7 +92,7 @@ DesprayFun(STRING file, STRING fname) := FUNCTION
    TempCSV               := file;
 
 /*---------------------------------------------------------------------------------*/
- deSprayCSV        := STD.File.DeSpray(TempCSV,LandingZoneIP,lzFilePathBaseFile,-1,,,TRUE);
+/* deSprayCSV        := STD.File.DeSpray(TempCSV,LandingZoneIP,lzFilePathBaseFile,-1,,,TRUE);
  
  delCSV := NOTHOR(FileServices.DeleteLogicalFile(TempCSV));
  Actions := SEQUENTIAL(deSprayCSV,delCSV);
@@ -98,21 +102,21 @@ END;
 
 //************************************************************************************************************************************************
 
-AzureDataDiff1 := OUTPUT(DataDiff1,,'~thor::base::Azure::DeltaInqHist::KCD::CSV',CSV(HEADING(SINGLE), QUOTE('"'), SEPARATOR('|'),NOTRIM),OVERWRITE);
+AzureAzureOnly := OUTPUT(AzureOnly,,'~thor::base::Azure::DeltaInqHist::KCD::CSV',CSV(HEADING(SINGLE), QUOTE('"'), SEPARATOR('|'),NOTRIM),OVERWRITE);
    
 DespryAzure := DesprayFun('~thor::base::Azure::DeltaInqHist::KCD::CSV','Azure_Datadiff_DeltaInqHist');
 
-Actions := SEQUENTIAL(AzureDataDiff1, DespryAzure);
+Actions := SEQUENTIAL(AzureAzureOnly, DespryAzure);
 
 //Actions;
 
 //*************************************************************************************************************************************************
 
-AzureDataDiff2 := OUTPUT(DataDiff2,,'~thor::base::Onprem::DeltaInqHist::KCD::CSV',CSV(HEADING(SINGLE), QUOTE('"'), SEPARATOR('|'),NOTRIM),OVERWRITE);
+AzureOnPremOnly := OUTPUT(OnPremOnly,,'~thor::base::Onprem::DeltaInqHist::KCD::CSV',CSV(HEADING(SINGLE), QUOTE('"'), SEPARATOR('|'),NOTRIM),OVERWRITE);
    
 DespryAzure1 := DesprayFun('~thor::base::OnPrem::DeltaInqHist::KCD::CSV','OnPrem_Datadiff_DeltaInqHist');
 
-Actions1 := SEQUENTIAL(AzureDataDiff2, DespryAzure1);
+Actions1 := SEQUENTIAL(AzureOnPremOnly, DespryAzure1);
 
 //Actions1;
 
@@ -129,32 +133,32 @@ OnpremDS_sample := CHOOSEN(Onprem_DS( customer_number IN ['10000'] and Lex_id<>0
 OUTPUT( OnpremDS_sample,named('OnPremDS_SampleData'));
 
 
-AzureSDataDiff1 := OUTPUT(AzureDS_sample,,'~thor::base::Azure::DeltaInqHist::sample::KCD::CSV',CSV(HEADING(SINGLE), QUOTE('"'), SEPARATOR('|'),NOTRIM),OVERWRITE);
+AzureSAzureOnly := OUTPUT(AzureDS_sample,,'~thor::base::Azure::DeltaInqHist::sample::KCD::CSV',CSV(HEADING(SINGLE), QUOTE('"'), SEPARATOR('|'),NOTRIM),OVERWRITE);
    
 DespryAzureS := DesprayFun('~thor::base::Azure::DeltaInqHist::sample::KCD::CSV','Azure_sample_DeltaInqHist');
 
-Actions5 := SEQUENTIAL(AzureSDataDiff1, DespryAzureS);
+Actions5 := SEQUENTIAL(AzureSAzureOnly, DespryAzureS);
 
 Actions5;
 
 //*************************************************************************************************************************************************
 
-AzureSDataDiff2 := OUTPUT(OnpremDS_sample,,'~thor::base::Onprem::DeltaInqHist::sample::KCD::CSV',CSV(HEADING(SINGLE), QUOTE('"'), SEPARATOR('|'),NOTRIM),OVERWRITE);
+AzureSOnPremOnly := OUTPUT(OnpremDS_sample,,'~thor::base::Onprem::DeltaInqHist::sample::KCD::CSV',CSV(HEADING(SINGLE), QUOTE('"'), SEPARATOR('|'),NOTRIM),OVERWRITE);
    
 DespryOnpremS := DesprayFun('~thor::base::OnPrem::DeltaInqHist::sample::KCD::CSV','OnPrem_sample_DeltaInqHist');
 
-Actions6 := SEQUENTIAL(AzureSDataDiff2, DespryOnpremS);
+Actions6 := SEQUENTIAL(AzureSOnPremOnly, DespryOnpremS);
 
 Actions6;
 
-
+*/
 //*******************************************************
 /*
-OUTPUT(DataDiff1(lex_id=0),named('DataDiff1_LexZero'));
-OUTPUT(COUNT(DataDiff1(lex_id=0)),named('Count_DataDiff1_LexZero'));
+OUTPUT(AzureOnly(lex_id=0),named('AzureOnly_LexZero'));
+OUTPUT(COUNT(AzureOnly(lex_id=0)),named('Count_AzureOnly_LexZero'));
 
-OUTPUT(DataDiff2(lex_id=0),named('DataDiff2_LexZero'));
-OUTPUT(COUNT(DataDiff2(lex_id=0)),named('Count_DataDiff2_LexZero'));
+OUTPUT(OnPremOnly(lex_id=0),named('OnPremOnly_LexZero'));
+OUTPUT(COUNT(OnPremOnly(lex_id=0)),named('Count_OnPremOnly_LexZero'));
 
 
 //*******************************************************

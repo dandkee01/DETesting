@@ -6,7 +6,7 @@ Layout := RECORD
    END;    
    
 SuperFileDS := DATASET([/*{'~thor::base::claimsdiscoveryauto::qa::delta_claim.txt','~thor::base::claimsdiscoveryauto::20240319a::delta_claim.txt'},*/
-                              {'~thor::base::claimsdiscoveryauto::qa::inqhist::subject','~thor::base::claimsdiscoveryauto::20240321b::inqhist::subject'}
+                              {'~thor::base::fcra::delta_inq_hist::qa::delta_key','~thor::base::fcra::delta_inq_hist::20250116::delta_key'}
                              // {'~thor::base::claimsdiscoveryauto::qa::inqhist::claim','~thor::base::claimsdiscoveryauto::20240321::inqhist::subject'},
                               /*{'~thor::base::clue::qa::transaction_log_vin.txt','~thor::base::clue::20240313a::transaction_log_vin.txt'},
                              {'~thor::base::clue::qa::transaction_log_claim.txt','~thor::base::clue::20240313a::transaction_log_claim.txt'}*/], Layout);
