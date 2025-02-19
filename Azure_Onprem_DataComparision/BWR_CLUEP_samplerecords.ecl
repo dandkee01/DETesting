@@ -68,40 +68,18 @@ Lay := RECORD
  END;
 
 
-OnPrem_File := DATASET('~thor::base::clueproperty::psb::20241113::daily::inqhist::subject',Lay,THOR);
+OnPrem_File := DATASET('~thor::base::clueproperty::op::20250129op::daily::inqhist::subject',Lay,THOR);
 
-Azure_File := DATASET('~thor::base::clueproperty::psb::20241113a::daily::inqhist::subject',Lay,THOR);
-
-//*********** Records That exists only in Azure But not in Onprem *************************//
-
-OUTPUT(Azure_File(reference_no IN ['24318000630857','24318003331539','24318003332309','24318003831914','24318004336198','24318004630001','24318004630004','24318004630018','24318004630028','24318004630033']),named('Only_Azure'));
-OUTPUT(OnPrem_File(reference_no IN ['24318000630857','24318003331539','24318003332309','24318003831914','24318004336198','24318004630001','24318004630004','24318004630018','24318004630028','24318004630033']),named('Not_In_Onprem'));
-
-//*********** Records That exists only in Onprem But not in Azure *************************//
-
-OUTPUT(OnPrem_File(reference_no IN ['23122002677384']));// repeated multiple times with diff record sid
-OUTPUT(OnPrem_File(reference_no IN ['23122002677385','23122002677386','23122002677387','23122002677473','23122002677478','23122002677483','23122002677485','23122002677493','23122002677495','23122002677505']),named('Only_Onprem'));
-OUTPUT(Azure_File(reference_no IN ['23122002677385','23122002677386','23122002677387','23122002677473','23122002677478','23122002677483','23122002677485','23122002677493','23122002677495','23122002677505']),named('Not_In_Azure'));
-
-//***************** Records That exists in both *******************************//
-
-OUTPUT(OnPrem_File(reference_no IN ['24317001710005','24317004110000','24317004110001','24317025930178','24317025930182','24317025930187','24317025930189','24317025930220','24317025930236','24317025930244','24317025930249','24317025930257','24317025930260','24317025930262']),named('Both_OnPrem'));
-OUTPUT(Azure_File(reference_no IN ['24317001710005','24317004110000','24317004110001','24317025930178','24317025930182','24317025930187','24317025930189','24317025930220','24317025930236','24317025930244','24317025930249','24317025930257','24317025930260','24317025930262']),named('Both_Azure'));
+Azure_File := DATASET('~thor::base::clueproperty::az::20250129a::daily::inqhist::subject',Lay,THOR);
 
 
+OUTPUT(Azure_File(reference_no IN ['25028045736055','25028066035294','25028076634062','25029001731308','25028098131889']),named('Azure_Sample'));
+OUTPUT(OnPrem_File(reference_no IN ['25028045736055','25028066035294','25028076634062','25029001731308','25028098131889']),named('Onprem_Sample'));
 
+OUTPUT(COUNT(OnPrem_File(delta_ind=3)),named('OnPrem_Delta3'));
+OUTPUT(COUNT(OnPrem_File(delta_ind=2)),named('OnPrem_Delta2'));
 
-// OUTPUT(COUNT(DEDUP(OnPrem_File,reference_no,transaction_id,customer_no,account_no,dateoforder,did)),named('OnPrem_File_Dedup'));
-// OUTPUT(COUNT(OnPrem_File),named('OnPrem_File_Cnt'));
-
-// OUTPUT(Azure_File(reference_no IN ['24317001510005','23122002677384','24317004110000','24317025930178','24317025930182']));
-// OUTPUT(COUNT(DEDUP(Azure_File,reference_no,transaction_id,customer_no,account_no,dateoforder,did)),named('Azure_File_Dedup'));
-// OUTPUT(COUNT(Azure_File),named('Azure_File_cnt'));
-
-
-// Ref_Set := SET(CHOOSEN(DEDUP(OnPrem_File,reference_no),500), reference_no): INDEPENDENT;
-// OUTPUT(SORT(Azure_File(reference_no IN Ref_Set),reference_no),named('Azure_recs'));
-// OUTPUT(SORT(OnPrem_File(reference_no IN Ref_Set),reference_no),named('OnPrem_recs'));
-
+OUTPUT(COUNT(Azure_File(delta_ind=3)),named('Azure_Delta3'));
+OUTPUT(COUNT(Azure_File(delta_ind=2)),named('Azure_Delta2'));
 
 

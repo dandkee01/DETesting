@@ -1,4 +1,19 @@
-﻿IMPORT STD, _control;
+﻿/*NCF OnPrem Files:
+ 
+thor::base::op::ncf::20250213::delta_key.txt - 805071
+thor::base::op::ncf::20250213::master_archive_report - 54058254
+thor::base::op::ncf::20250214::delta_key.txt - 1580041
+thor::base::op::ncf::20250214::master_archive_report - 105414636
+ 
+NCF Azure Files:
+ 
+thor::base::az::ncf::20250213a::delta_key.txt - 805071
+thor::base::az::ncf::20250213a::master_archive_report - 54058254
+thor::base::az::ncf::20250214a::delta_key.txt - 1580041
+thor::base::az::ncf::20250214a::master_archive_report - 105414636
+*/
+
+IMPORT STD, _control;
 
 Lay := RECORD
   unsigned2 juliandate;
@@ -16,13 +31,13 @@ Lay := RECORD
 
 
 
-OnPrem_File := '~thor::base::ncf::20241113::master_archive_report';
+OnPrem_File := '~thor::base::op::ncf::20250213::master_archive_report';
 
 OnPrem_DS := DATASET(OnPrem_File,Lay,THOR);
 
 OUTPUT(COUNT(OnPrem_DS),named('OnPrem_DS_cnt'));
 
-Azure_File := '~thor::base::ncf::20241113a::master_archive_report';
+Azure_File := '~thor::base::az::ncf::20250213a::master_archive_report';
 
 Azure_DS := DATASET(Azure_File,Lay,THOR);
 
@@ -32,13 +47,13 @@ OUTPUT(COUNT(Azure_DS),named('Azure_DS_cnt'));
 
 
 MA_DataDiff2 := OnPrem_DS-Azure_DS;
-OUTPUT(MA_DataDiff2,named('MA_DataDiff2'));
+OUTPUT(MA_DataDiff2,named('MA_OnPrem_DataDiff'));
 
 MA_DataDiff1 := Azure_DS-OnPrem_DS;
-OUTPUT(MA_DataDiff1,named('MA_DataDiff1'));
+OUTPUT(MA_DataDiff1,named('MA_Azure_DataDiff'));
 
-OUTPUT(Azure_DS( record_sid between 5000 and 5010),named('AzureDS_SampleData'));
-OUTPUT(OnPrem_DS( record_sid between 5000 and 5010),named('OnPrem_DS_SampleData'));
+//OUTPUT(Azure_DS( record_sid between 5000 and 5010),named('AzureDS_SampleData'));
+//OUTPUT(OnPrem_DS( record_sid between 5000 and 5010),named('OnPrem_DS_SampleData'));
 
 DesprayFun(STRING file, STRING fname) := FUNCTION
 
@@ -66,7 +81,7 @@ DespryAzure := DesprayFun('~thor::base::Azure::LogNCF::MasterArchive::KCD::CSV',
 
 Actions := SEQUENTIAL(AzureMA_DataDiff1, DespryAzure);
 
-Actions;
+//Actions;
 
 //*************************************************************************************************************************************************
 
@@ -76,7 +91,7 @@ DespryAzure1 := DesprayFun('~thor::base::OnPrem::LogNCF::MasterArchive::KCD::CSV
 
 Actions1 := SEQUENTIAL(AzureMA_DataDiff2, DespryAzure1);
 
-Actions1;
+//Actions1;
 
 
 //**********************************************************************************************************************************************************
@@ -134,18 +149,25 @@ Lay2 := RECORD
   unsigned4 dt_effective_last;
   unsigned1 delta_ind;
  END;
+ 
+ ProjLay := RECORD
+   Lay2 AND NOT record_sid;
+ END;
 
 
-DeltaOnPrem_File := '~thor::base::ncf::20241113::delta_key.txt';
+DeltaOnPrem_File := '~thor::base::op::ncf::20250213::delta_key.txt';
 
-DisDeltaOnPrem_DS := DATASET(DeltaOnPrem_File,Lay2,THOR);
+DisDeltaOnPrem_DS0 := DATASET(DeltaOnPrem_File,Lay2,THOR);
+DisDeltaOnPrem_DS := PROJECT(DisDeltaOnPrem_DS0,ProjLay);
 
 OUTPUT(COUNT(DisDeltaOnPrem_DS),named('DeltaOnPrem_DS_cnt'));
 
 
-DeltaAzure_File := '~thor::base::ncf::20241113a::delta_key.txt';
+DeltaAzure_File := '~thor::base::az::ncf::20250213a::delta_key.txt';
 
-DisDeltaAzure_DS := DATASET(DeltaAzure_File,Lay2,THOR);
+DisDeltaAzure_DS0 := DATASET(DeltaAzure_File,Lay2,THOR);
+DisDeltaAzure_DS := PROJECT(DisDeltaAzure_DS0,ProjLay);
+
 
 OUTPUT(COUNT(DisDeltaAzure_DS),named('DeltaAzure_DS_cnt'));
 
@@ -153,14 +175,14 @@ OUTPUT(COUNT(DisDeltaAzure_DS),named('DeltaAzure_DS_cnt'));
 
 //***Verification for data difference************
 DK_DataDiff2 := DisDeltaOnPrem_DS-DisDeltaAzure_DS;
-OUTPUT(DK_DataDiff2,named('DeltaDataDiff2'));
+OUTPUT(DK_DataDiff2,named('Delta_OnPremDataDiff'));
 
 DK_DataDiff1 := DisDeltaAzure_DS-DisDeltaOnPrem_DS;
-OUTPUT(DK_DataDiff1,named('DeltaDataDiff1'));
+OUTPUT(DK_DataDiff1,named('Delta_Azure_DataDiff'));
 
 
-OUTPUT(DisDeltaAzure_DS( transaction_id IN ['18157073R252186','	18157073R253220','18157073R253348']),named('Delta_AzureDS_SampleData'));
-OUTPUT(DisDeltaOnPrem_DS( transaction_id IN ['18157073R252186','	18157073R253220','18157073R253348']),named('DeltaOnPrem_DS_SampleData'));
+//OUTPUT(DisDeltaAzure_DS( transaction_id IN ['18157073R252186','	18157073R253220','18157073R253348']),named('Delta_AzureDS_SampleData'));
+//OUTPUT(DisDeltaOnPrem_DS( transaction_id IN ['18157073R252186','	18157073R253220','18157073R253348']),named('DeltaOnPrem_DS_SampleData'));
 
 //************************************************************************************************************************************************
 
@@ -170,7 +192,7 @@ DK_DesprayAzure := DesprayFun('~thor::base::Azure::LogNCF::DeltaKey::KCD::CSV','
 
 Actions3 := SEQUENTIAL(AzureDK_DataDiff1, DK_DesprayAzure);
 
-Actions3;
+//Actions3;
 
 //*************************************************************************************************************************************************
 
@@ -180,4 +202,4 @@ DK_DespryAzure1 := DesprayFun('~thor::base::OnPrem::LogNCF::DeltaKey::KCD::CSV',
 
 Actions4 := SEQUENTIAL(AzureDK_DataDiff2, DK_DespryAzure1);
 
-Actions4;
+//Actions4;

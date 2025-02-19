@@ -67,15 +67,19 @@ Lay := RECORD
   unsigned8 xlink_weight;
  END;
 
+ProjLay := RECORD
+  Lay AND NOT [source_rid, record_sid]
+ END;
 
-OnPrem_File := '~thor::base::clueproperty::psb::20241113::daily::inqhist::subject';
+
+OnPrem_File := '~thor::base::clueproperty::op::20250130::daily::inqhist::subject';
 
 OnPrem_DS := SORT(DATASET(OnPrem_File,Lay,THOR),transaction_id,reference_no);
 
 OUTPUT(COUNT(OnPrem_DS),named('OnPrem_DS_cnt'));
 
 
-Azure_File := '~thor::base::clueproperty::psb::20241113a::daily::inqhist::subject';
+Azure_File := '~thor::base::clueproperty::az::20250130a::daily::inqhist::subject';
 
 Azure_DS := SORT(DATASET(Azure_File,Lay,THOR),transaction_id,reference_no);
 
@@ -85,13 +89,16 @@ OUTPUT(COUNT(Azure_DS),named('Azure_DS_cnt'));
 
 
 //***Verification for data difference************
-DataDiff2 := SORT(OnPrem_DS-Azure_DS,transaction_id,reference_no);
-OUTPUT(CHOOSEN(DataDiff2,200),named('DataDiff2'));
-OUTPUT(COUNT(DataDiff2),named('Cnt_DataDiff2'));
+Proj_OnPrem_DS := PROJECT( OnPrem_DS,ProjLay);
+Proj_Azure_DS := PROJECT( Azure_DS,ProjLay);
 
-DataDiff1 := SORT(Azure_DS-OnPrem_DS,transaction_id,reference_no);
-OUTPUT(CHOOSEN(DataDiff1,200),named('DataDiff1'));
-OUTPUT(COUNT(DataDiff1),named('Cnt_DataDiff1'));
+OP_DataDiff := SORT(Proj_OnPrem_DS-Proj_Azure_DS,transaction_id,reference_no);
+OUTPUT(CHOOSEN(OP_DataDiff,200),named('OP_DataDiff'));
+OUTPUT(COUNT(OP_DataDiff),named('Cnt_OP_DataDiff'));
+
+AZ_DataDiff := SORT(Proj_Azure_DS-Proj_OnPrem_DS,transaction_id,reference_no);
+OUTPUT(CHOOSEN(AZ_DataDiff,200),named('AZ_DataDiff'));
+OUTPUT(COUNT(AZ_DataDiff),named('Cnt_AZ_DataDiff'));
 
 
 DesprayFun(STRING file, STRING fname) := FUNCTION
@@ -114,23 +121,22 @@ END;
 
 //************************************************************************************************************************************************
 
-AzureDataDiff1 := OUTPUT(DataDiff1,,'~thor::base::Azure::CLUEP::KCD::CSV',CSV(HEADING(SINGLE), QUOTE('"'), SEPARATOR('|'),NOTRIM),OVERWRITE);
+AzureAZ_DataDiff := OUTPUT(AZ_DataDiff,,'~thor::base::Azure::CLUEP::KCD::CSV',CSV(HEADING(SINGLE), QUOTE('"'), SEPARATOR('|'),NOTRIM),OVERWRITE);
    
 DespryAzure := DesprayFun('~thor::base::Azure::CLUEP::KCD::CSV','Azure_Datadiff_CLUEP');
 
-Actions := SEQUENTIAL(AzureDataDiff1, DespryAzure);
+Actions := SEQUENTIAL(AzureAZ_DataDiff, DespryAzure);
 
-Actions;
+//Actions;
 
 //*************************************************************************************************************************************************
-
-AzureDataDiff2 := OUTPUT(DataDiff2,,'~thor::base::Onprem::CLUEP::KCD::CSV',CSV(HEADING(SINGLE), QUOTE('"'), SEPARATOR('|'),NOTRIM),OVERWRITE);
+OP_DataDiff2 := OUTPUT(OP_DataDiff,,'~thor::base::Onprem::CLUEP::KCD::CSV',CSV(HEADING(SINGLE), QUOTE('"'), SEPARATOR('|'),NOTRIM),OVERWRITE);
    
-DespryAzure1 := DesprayFun('~thor::base::OnPrem::CLUEP::KCD::CSV','OnPrem_Datadiff_CLUEP');
+DesprayOnPrem := DesprayFun('~thor::base::OnPrem::CLUEP::KCD::CSV','OnPrem_Datadiff_CLUEP');
 
-Actions1 := SEQUENTIAL(AzureDataDiff2, DespryAzure1);
+Actions1 := SEQUENTIAL(OP_DataDiff2, DesprayOnPrem);
 
-Actions1;
+//Actions1;
 
 
 

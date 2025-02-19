@@ -19,13 +19,13 @@ actions := SEQUENTIAL(
 
 
 //MySuperFile := '~thor::base::cclue::priorhist::qa::subject';
-MySuperFile := '~thor::base::cclue::priorhist::qa::delta_subject';
-MySubFile   := '~thor::base::cclue::priorhist::20240220::delta_subject';
+MySuperFile := '~thor::base::fcra::delta_inq_hist::qa::delta_key';
+MySubFile   := '~thor::base::fcra::delta_inq_hist::20250131::delta_key';
 actions3 := SEQUENTIAL(
  STD.File.StartSuperFileTransaction(),
  STD.File.AddSuperFile(MySuperFile,MySubFile),
  STD.File.FinishSuperFileTransaction()
 );
 
-action := SEQUENTIAL(actions2,actions,actions3,actions2);
-//action;
+action := SEQUENTIAL(actions3);
+action;

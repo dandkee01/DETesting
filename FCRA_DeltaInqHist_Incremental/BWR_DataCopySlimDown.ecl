@@ -1,6 +1,5 @@
-﻿IMPORT Std,_control;
-
-Lay := RECORD
+﻿IMPORT ut;
+lay := RECORD
   unsigned8 lex_id;
   string30 product_id;
   string19 inquiry_date;
@@ -47,22 +46,17 @@ Lay := RECORD
   string5 zip;
   string4 zip4;
   string4 error_code;
+  unsigned8 record_sid;
+  unsigned4 dt_effective_first;
+  unsigned4 dt_effective_last;
+  unsigned1 delta_ind;
  END;
 
-
-
-Azure_File := '~thor::base::az::fcra::delta_inq_hist::20250213a::delta_key';
-
-Azure_DS := SORT(DATASET(Azure_File,Lay,THOR),-transaction_id,product_id,customer_number,customer_account,seq_num);
-
-//Azure_DS(transaction_id='18500963R566417');     
-
-OnPrem_File := '~thor::base::op::fcra::delta_inq_hist::20250213::delta_key';
-
-OnPrem_DS := SORT(DATASET(OnPrem_File,Lay,THOR),-transaction_id,product_id,customer_number,customer_account,seq_num);
+prod_ds:= dataset('~thor::base::fcra::delta_inq_hist::20250212::delta_key',lay,thor); // father file version
+Slim_prod_ds := CHOOSEN(SORT(prod_ds,-date_added),10000);
+Dist_ProdDs  := DISTRIBUTE (Slim_prod_ds,HASH64(lex_id,transaction_id,product_id,date_added,seq_num));
+output(Dist_ProdDs,,'~thor::base::fcra::delta_inq_hist::20250212k::delta_key',compressed,overwrite);
 
 
 
-OUTPUT(Azure_DS(transaction_id IN ['19579503R304695','19607383R44183','19607893U260337','19607893U260785','19607893U262903']),named('Azure_Recs'));
-OUTPUT(OnPrem_DS(transaction_id IN ['19579503R304695','19607383R44183','19607893U260337','19607893U260785','19607893U262903']),named('OnPrem_Recs'));
 

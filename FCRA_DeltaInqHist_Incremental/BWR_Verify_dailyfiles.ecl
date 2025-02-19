@@ -1,6 +1,4 @@
-﻿IMPORT Std,_control;
-
-name := RECORD
+﻿name := RECORD
    string28 lname;
    string20 fname;
    string15 mname;
@@ -22,7 +20,7 @@ cleaned_address := RECORD
    string4 zip4;
   END;
 
-Lay := RECORD
+SubDailyRec := RECORD
   string14 reference_no;
   string3 unit_no;
   string20 transaction_id;
@@ -64,22 +62,15 @@ Lay := RECORD
   string1 report_as;
   unsigned8 xlink_weight;
  END;
+
+
+
+daily1   := '~thor::base::clueauto::kcd::20240613::daily::inqhist::subject';
+ Daily1DS		:= DATASET (daily1,SubDailyRec,THOR);	
+ //OUTPUT(Daily1DS/*(reference_no='11111111111001')*/,{transaction_id,reference_no,unit_no,source_rid,lname,fname,mname,record_sid,dt_effective_first,dt_effective_last,delta_ind},named('daily1_Subject'));
+ OUTPUT(Daily1DS/*(reference_no='11111111111001')*/,named('daily1_Subject'));
  
- Sub_Layout := RECORD
-   string20 transaction_id;
-   string14 reference_no;
- END;
  
-
-OnPrem_File := '~thor::base::clueauto::op::20250129op::daily::inqhist::subject';
-
-OnPrem_DS       := DATASET(OnPrem_File,Lay,THOR);
-
-
-Azure_File := '~thor::base::clueauto::az::20250129a::daily::inqhist::subject';
-
-Azure_DS := DATASET(Azure_File,Lay,THOR);
-
-OUTPUT(OnPrem_DS(transaction_id IN ['19498573U179986','19498573U179997','19498573U179998','19498573U180016','19498573U180017']), named('OnPrem_Recs'));
-OUTPUT(Azure_DS(transaction_id IN ['19498573U179986','19498573U179997','19498573U179998','19498573U180016','19498573U180017']), named('Azure_Recs'));
-
+ daily2   := '~thor::base::clueauto::kcd::20240614::daily::inqhist::subject';
+ Daily2DS		:= DATASET (daily2,SubDailyRec,THOR);	
+ OUTPUT(Daily2DS/*(reference_no='11111111111001')*/,named('daily2_Subject'));

@@ -1,4 +1,13 @@
-﻿Lay := RECORD
+﻿/*
+thor::base::op::fcra::delta_inq_hist::20250214::delta_key
+ 
+thor::base::az::fcra::delta_inq_hist::20250214a::delta_key
+ 
+thor::base::op::fcra::delta_inq_hist::20250213::delta_key
+thor::base::az::fcra::delta_inq_hist::20250213a::delta_key
+*/
+
+Lay := RECORD
   unsigned8 lex_id;
   string30 product_id;
   string19 inquiry_date;
@@ -49,14 +58,14 @@
 
 
 
-Azure_File := '~thor::base::azure::fcra::delta_inq_hist::20250122a::delta_key';
+Azure_File := '~thor::base::az::fcra::delta_inq_hist::20250214a::delta_key';
 
 Azure_DS := SORT(DATASET(Azure_File,Lay,THOR),-transaction_id,customer_number,customer_account,seq_num,product_id);
 
 OUTPUT(COUNT(Azure_DS),named('Azure_DS_cnt'));
 
 
-OnPrem_File := '~thor::base::onprem::fcra::delta_inq_hist::20250122op::delta_key';
+OnPrem_File := '~thor::base::op::fcra::delta_inq_hist::20250214::delta_key';
 
 OnPrem_DS := SORT(DATASET(OnPrem_File,Lay,THOR),-transaction_id,customer_number,customer_account,seq_num,product_id);
 

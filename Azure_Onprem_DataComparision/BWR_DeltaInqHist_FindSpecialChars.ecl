@@ -51,14 +51,14 @@ Lay := RECORD
 
 
 
-Azure_File := '~thor::base::azure::fcra::delta_inq_hist::20250122a::delta_key';
+Azure_File := '~thor::base::az::fcra::delta_inq_hist::20250213a::delta_key';
 
 Azure_DS := DATASET(Azure_File,Lay,THOR);
 //Azure_DS := Azure_DS1(~(lex_id=0 OR TRIM(addr_street)='' OR TRIM(addr_city)='' OR TRIM(addr_state) =''));
 //Azure_DS := Azure_DS1//(transaction_id IN ['PDW250121223315VW7U4','PDW250122011150ZKSVM','PDW250122001422EGHD6','PDW250121200455BJU2F','PDW250121200049SD9ZS']);
 
 
-OnPrem_File := '~thor::base::onprem::fcra::delta_inq_hist::20250122op::delta_key';
+OnPrem_File := '~thor::base::op::fcra::delta_inq_hist::20250213::delta_key';
 
 OnPrem_DS := DATASET(OnPrem_File,Lay,THOR);
 

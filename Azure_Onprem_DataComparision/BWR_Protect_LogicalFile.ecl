@@ -1,6 +1,11 @@
 ﻿
 IMPORT STD;
 
+thor::base::currentcarrier::op::20250204::delta_key.txt 
+thor::base::currentcarrier::az::20250204a::delta_key.txt
+
+thor::base::currentcarrier::op::20250205::delta_key.txt
+thor::base::currentcarrier::az::20250205a::delta_key.txt
  f1 := '~thor::base::fcra::delta_inq_hist::20250116::delta_key';
 
  f2 := '~thor::base::fcra::delta_inq_hist::20250117::delta_key';

@@ -1,6 +1,6 @@
-﻿IMPORT Std,_control;
-
-name := RECORD
+﻿	IMPORT CCLUE_PriorHistory;
+  
+  name := RECORD
    string28 lname;
    string20 fname;
    string15 mname;
@@ -30,6 +30,7 @@ Lay := RECORD
   string9 account_no;
   string60 quoteback;
   string8 dateoforder;
+  string8 process_date;
   string28 lname;
   string20 fname;
   string15 mname;
@@ -57,29 +58,16 @@ Lay := RECORD
   unsigned4 dt_effective_first;
   unsigned4 dt_effective_last;
   unsigned1 delta_ind;
-  string1 service_type;
-  string8 process_date;
-  string5 spl_bill_id;
-  string1 bill_as;
-  string1 report_as;
-  unsigned8 xlink_weight;
  END;
- 
- Sub_Layout := RECORD
-   string20 transaction_id;
-   string14 reference_no;
- END;
- 
 
-OnPrem_File := '~thor::base::clueauto::op::20250129op::daily::inqhist::subject';
-
-OnPrem_DS       := DATASET(OnPrem_File,Lay,THOR);
-
-
-Azure_File := '~thor::base::clueauto::az::20250129a::daily::inqhist::subject';
-
-Azure_DS := DATASET(Azure_File,Lay,THOR);
-
-OUTPUT(OnPrem_DS(transaction_id IN ['19498573U179986','19498573U179997','19498573U179998','19498573U180016','19498573U180017']), named('OnPrem_Recs'));
-OUTPUT(Azure_DS(transaction_id IN ['19498573U179986','19498573U179997','19498573U179998','19498573U180016','19498573U180017']), named('Azure_Recs'));
-
+  
+  Daily_SubjectSF   := '~thor::base::cclue::priorhist::20240310::daily::subject';
+  DailySubject_DS		:= DATASET (Daily_SubjectSF,Lay,THOR);	
+  
+  qaSubFile      := '~thor::base::claimsdiscoveryauto::kcd::qa::inqhist::subject';
+  qaSubFile_DS1		:= DATASET (qaSubFile,Lay,THOR);
+  qaSubFile_DS := qaSubFile_DS1;
+  
+  SORT(qaSubFile_DS(TRIM(reference_no,LEFT,RIGHT)='22222222222227'),dt_effective_first);
+  
+	
